@@ -4,50 +4,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 新規登録
-func Auth_Signup(c *gin.Context) {
-}
+func Api() {
+	router := gin.Default()
 
-// ログイン
-func Auth_Login(c *gin.Context) {
-}
+	router.POST("/auth/signup", Auth_Signup)
+	router.POST("/auth/login", Auth_Login)
+	router.GET("/oshimen", Get_Oshimen)
+	router.POST("/oshimen", Post_Oshimen)
+	router.DELETE("/oshimen/:id", Delete_Oshimen)
+	router.GET("/oshimen/:id", Get_OshimenInfo)
+	router.GET("/goods", Get_Goods)
+	router.POST("/purchases", Post_Purchases)
+	router.GET("/purchases", Get_Purchases)
+	router.PUT("/purchases/:id", Put_Purchases)
+	router.POST("/statistics", Post_Statistics)
+	router.GET("/statistics", Get_Statistics)
 
-// 推しメン一覧取得
-func Get_Oshimen(c *gin.Context) {
-}
-
-// 推しメン追加
-func Post_Oshimen(c *gin.Context) {
-}
-
-// 推しメン削除
-func Delete_Oshimen(c *gin.Context) {
-}
-
-// 推しメン情報取得
-func Get_OshimenInfo(c *gin.Context) {
-}
-
-// グッズ一覧取得
-func Get_Goods(c *gin.Context) {
-}
-
-// 購入記録追加
-func Post_Purchases(c *gin.Context) {
-}
-
-// 購入記録取得
-func Get_Purchases(c *gin.Context) {
-}
-
-// 購入記録更新
-func Put_Purchases(c *gin.Context) {
-}
-
-// 購入集計記録
-func Post_Statistics(c *gin.Context) {
-}
-
-// 購入集計取得
-func Get_Statistics(c *gin.Context) {
+	router.Run(":2020")
 }

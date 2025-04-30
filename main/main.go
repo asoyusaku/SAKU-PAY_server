@@ -1,5 +1,9 @@
 package main
 
-func main() {
+import (
+	"SAKU-PAY/scraping"
+)
 
+func main() {
+	scraping.Scrape()
 }

@@ -1,9 +1,12 @@
 package main
 
 import (
-	"SAKU-PAY/scraping"
+	api "SAKU-PAY/api"
+	database "SAKU-PAY/db"
 )
 
 func main() {
-	scraping.Scrape()
+	database.Database()
+	api.Api()
+	// scraping.Scrape()
 }

@@ -1,11 +1,24 @@
 package api
 
 import (
+	database "SAKU-PAY/db"
+	"SAKU-PAY/model"
+	"SAKU-PAY/scraping"
+
 	"github.com/gin-gonic/gin"
 )
 
 // 新規登録
 func Auth_Signup(c *gin.Context) {
+	var token model.IdToken
+
+	if err := c.BindJSON(&token); err != nil {
+		return
+	}
+	if err := database.AddIdToken(token); err != nil {
+		c.JSON(500, gin.H{"error": "failed to add id token"})
+		return
+	}
 }
 
 // ログイン
@@ -30,6 +43,7 @@ func Get_OshimenInfo(c *gin.Context) {
 
 // グッズ一覧取得
 func Get_Goods(c *gin.Context) {
+	scraping.Scrape()
 }
 
 // 購入記録追加

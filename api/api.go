@@ -20,5 +20,5 @@ func Api() {
 	router.POST("/statistics", Post_Statistics)
 	router.GET("/statistics", Get_Statistics)
 
-	router.Run(":2020")
+	router.Run(":9090")
 }

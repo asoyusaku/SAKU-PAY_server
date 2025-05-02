@@ -6,5 +6,6 @@ import (
 
 const Database_file string = "SAKU-PAY.db"
 const Goods_list_url string = "https://store.plusmember.jp/sakurazaka46/"
+const Member_list_url string = "https://sakurazaka46.com/s/s46/search/artist"
 
 var Database *gorm.DB

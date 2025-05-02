@@ -22,26 +22,125 @@ func AddIdToken(token model.IdToken) error {
 
 }
 
-// func GetIdToken() (model.IdToken, error) {
-// }
+func AddUser(response model.Response) error {
+	user := model.User{
+		ID:      response.Sub,
+		Name:    response.Name,
+		Picture: response.Picture,
+		Email:   response.Email,
+	}
 
-// func AddUser(user model.User) error {
-// }
+	if err := variables.Database.Create(&user).Error; err != nil {
+		return err
+	}
 
-// func GetUser() (model.User, error) {
-// }
+	return nil
+}
 
-// func AddOshimen(oshimen model.Oshimen) error {
-// }
+func GetUser(sub string) (model.User, error) {
+	var user model.User
+	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
+		return model.User{}, err
+	}
 
-// func GetOshimen() ([]model.Oshimen, error) {
-// }
+	return user, nil
+}
 
-// func AddGoods(goods model.Goods) error {
-// }
+func AddOshimen(sub string, oshimen string) error {
+	var user model.User
+	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
+		return err
+	}
+	member, err := GetMember(oshimen)
+	if err != nil {
+		return err
+	}
+	picture := member.Picture
 
-// func GetGoods() ([]model.Goods, error) {
-// }
+	oshimenList := model.Oshimen{
+		Name:    oshimen,
+		Picture: picture,
+	}
+
+	user, err = GetUser(sub)
+	if err != nil {
+		return err
+	}
+
+	if err := variables.Database.Model(&user).Association("Oshimen").Append(&oshimenList); err != nil {
+		return err
+	}
+	if err := variables.Database.Save(&user).Error; err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func AddMember(member model.Member) error {
+	if err := variables.Database.Create(&member).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetMember(name string) (model.Member, error) {
+	var member model.Member
+	if err := variables.Database.Where("name = ?", name).First(&member).Error; err != nil {
+		return model.Member{}, err
+	}
+	return member, nil
+}
+
+func GetOshimen(sub string) ([]model.Oshimen, error) {
+	var user model.User
+
+	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
+		return nil, err
+	}
+	var oshimenList []model.Oshimen
+	if err := variables.Database.Model(&user).Association("Oshimen").Find(&oshimenList); err != nil {
+		return nil, err
+	}
+	return oshimenList, nil
+
+}
+
+func AddGoods(sub string, goods model.Goods) error {
+	var user model.User
+
+	//userのgoodslistにgoodsを追加する
+	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
+		return err
+	}
+
+	if err := variables.Database.Model(&user).Association("Goods").Append(&goods); err != nil {
+		return err
+	}
+
+	if err := variables.Database.Save(&user).Error; err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func GetGoods(sub string) ([]model.Goods, error) {
+	var user model.User
+
+	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	var goodsList []model.Goods
+	if err := variables.Database.Model(&user).Association("Goods").Find(&goodsList); err != nil {
+		return nil, err
+	}
+
+	return goodsList, nil
+}
 
 func Database() {
 	database, err := gorm.Open(sqlite.Open(variables.Database_file), &gorm.Config{})
@@ -55,6 +154,7 @@ func Database() {
 	database.AutoMigrate(&model.User{})
 	database.AutoMigrate(&model.Oshimen{})
 	database.AutoMigrate(&model.Goods{})
+	database.AutoMigrate(&model.Member{})
 
 	fmt.Println("Database connected successfully")
 

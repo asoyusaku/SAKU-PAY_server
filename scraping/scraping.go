@@ -8,7 +8,7 @@ import (
 	"github.com/go-rod/rod/lib/launcher"
 )
 
-func Scrape() {
+func Scrape_Goods() {
 
 	url := launcher.New().MustLaunch()
 	browser := rod.New().ControlURL(url).MustConnect()
@@ -42,5 +42,9 @@ func Scrape() {
 		page.MustElement("a.next").MustClick()
 		page.MustWaitStable()
 	}
+
+}
+
+func Scrape_Members() {
 
 }

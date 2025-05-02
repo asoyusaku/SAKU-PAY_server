@@ -21,10 +21,6 @@ func Auth_Signup(c *gin.Context) {
 	}
 }
 
-// ログイン
-func Auth_Login(c *gin.Context) {
-}
-
 // 推しメン一覧取得
 func Get_Oshimen(c *gin.Context) {
 }
@@ -43,7 +39,7 @@ func Get_OshimenInfo(c *gin.Context) {
 
 // グッズ一覧取得
 func Get_Goods(c *gin.Context) {
-	scraping.Scrape()
+	scraping.Scrape_Goods()
 }
 
 // 購入記録追加

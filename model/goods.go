@@ -10,3 +10,5 @@ type Goods struct {
 	Price string `json:"price"`
 	Image string `json:"image"`
 }
+
+type GoodsList []Goods

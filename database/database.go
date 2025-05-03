@@ -13,13 +13,10 @@ func AddIdToken(token model.IdToken) error {
 	idtoken := model.IdToken{
 		IdToken: token.IdToken,
 	}
-
 	if err := variables.Database.Create(&idtoken).Error; err != nil {
 		return err
 	}
-
 	return nil
-
 }
 
 func AddUser(response model.Response) error {
@@ -140,6 +137,13 @@ func GetGoods(sub string) ([]model.Goods, error) {
 	}
 
 	return goodsList, nil
+}
+
+func Add_Scrape_Goods(goods model.Goods) error {
+	if err := variables.Database.Create(&goods).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func Database() {

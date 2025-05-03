@@ -1,7 +1,7 @@
 package api
 
 import (
-	database "SAKU-PAY/db"
+	"SAKU-PAY/database"
 	"SAKU-PAY/model"
 	"SAKU-PAY/scraping"
 

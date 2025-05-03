@@ -115,10 +115,10 @@ func Scrape_Members() {
 	}
 	fmt.Println("")
 	fmt.Println("")
-	db, _ := database.Get_Scrape_Member()
-	for _, v := range db {
-		fmt.Println("Member Name:", v.Name)
-		fmt.Println("Member Photo:", v.Picture)
+	db, _ := database.GetMember()
+	for _, member := range db {
+		fmt.Println("Member Name:", member.Name)
+		fmt.Println("Member Photo:", member.Picture)
 	}
 
 }

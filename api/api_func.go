@@ -9,7 +9,7 @@ import (
 )
 
 // 新規登録
-func Auth_Signup(c *gin.Context) {
+func Auth_Signup(c *gin.Context) { //complete
 	var token model.IdToken
 
 	if err := c.BindJSON(&token); err != nil {
@@ -21,42 +21,49 @@ func Auth_Signup(c *gin.Context) {
 	}
 }
 
+func Add_User(c *gin.Context) { //complete
+	var response model.Response
+
+	if err := c.BindJSON(&response); err != nil {
+		c.JSON(400, gin.H{"error": "failed to bind response"})
+		return
+	}
+
+	if err := database.AddUser(response); err != nil {
+		c.JSON(500, gin.H{"error": "failed to add user"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "user added successfully"})
+}
+
 // 推しメン一覧取得
-func Get_Oshimen(c *gin.Context) {
-	sub := c.Query("sub")
-	if sub == "" {
-		c.JSON(400, gin.H{"error": "sub is required"})
+func Get_Oshimen(c *gin.Context) { //complete
+	id := c.Param("id")
+
+	if oshimen, err := database.GetOshimen(id); err != nil {
+		c.JSON(500, gin.H{"error": "failed to get oshimen"})
+		return
+	} else {
+		c.JSON(200, gin.H{"oshimen": oshimen})
 		return
 	}
 
-	user, err := database.GetUser(sub)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "failed to get user"})
-		return
-	}
-
-	c.JSON(200, user.Oshimen)
 }
 
 // 推しメン追加
-func Post_Oshimen(c *gin.Context) {
-	sub := c.Query("sub")
-	if sub == "" {
-		c.JSON(400, gin.H{"error": "sub is required"})
+func Post_Oshimen(c *gin.Context) { //complete
+	var request model.Request
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": "failed to bind request"})
 		return
 	}
-
-	var oshimen model.Oshimen
-	if err := c.BindJSON(&oshimen); err != nil {
-		c.JSON(400, gin.H{"error": "failed to bind oshimen"})
-		return
-	}
-
-	if err := database.AddOshimen(sub, oshimen.Name); err != nil {
+	if err := database.AddOshimen(request.UserId, request.Oshimen); err != nil {
 		c.JSON(500, gin.H{"error": "failed to add oshimen"})
 		return
 	}
-	c.JSON(200, gin.H{"message": "oshimen added"})
+	c.JSON(200, gin.H{"message": "oshimen added successfully"})
 }
 
 // 推しメン削除

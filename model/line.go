@@ -10,7 +10,6 @@ type IdToken struct {
 }
 
 type Response struct {
-	gorm.Model
 	Iss     string `json:"iss"`
 	Sub     string `json:"sub"`
 	Aud     string `json:"aud"`

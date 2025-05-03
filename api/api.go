@@ -8,16 +8,18 @@ func Api() {
 	router := gin.Default()
 
 	router.POST("/auth/signup", Auth_Signup)
-	router.GET("/oshimen", Get_Oshimen)
+	router.GET("/oshimen/:id", Get_Oshimen)
 	router.POST("/oshimen", Post_Oshimen)
-	router.DELETE("/oshimen/:id", Delete_Oshimen)
-	router.GET("/oshimen/:id", Get_OshimenInfo)
+	router.DELETE("/oshimen", Delete_Oshimen)
+	router.GET("/oshimen/", Get_OshimenInfo)
 	router.GET("/goods", Get_Goods)
 	router.POST("/purchases", Post_Purchases)
 	router.GET("/purchases", Get_Purchases)
-	router.PUT("/purchases/:id", Put_Purchases)
+	router.PUT("/purchases/", Put_Purchases)
 	router.POST("/statistics", Post_Statistics)
 	router.GET("/statistics", Get_Statistics)
+
+	router.POST("/user", Add_User)
 
 	router.Run(":9090")
 }

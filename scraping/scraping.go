@@ -91,4 +91,34 @@ func Scrape_Members() {
 	title := page.MustInfo().Title
 	fmt.Println("Page Title:", title)
 
+	for {
+		elements_name := page.MustElements("p.name")
+		if len(elements_name) == 0 {
+			continue
+		} else {
+			for i := 0; i < len(elements_name); i++ {
+				member_name := elements_name[i].MustText()
+				img := page.MustElement("img[alt='" + member_name + "']")
+				member_photo := img.MustAttribute("src")
+				fmt.Println("Member Name:", member_name)
+				photo := fmt.Sprintf("%s%s", variables.Base_url, *member_photo)
+				fmt.Println("Member Photo:", photo)
+				member_photo = &photo
+				member := model.Member{
+					Name:    member_name,
+					Picture: *member_photo,
+				}
+				database.Add_Scrape_Member(member)
+			}
+			break
+		}
+	}
+	fmt.Println("")
+	fmt.Println("")
+	db, _ := database.Get_Scrape_Member()
+	for _, v := range db {
+		fmt.Println("Member Name:", v.Name)
+		fmt.Println("Member Photo:", v.Picture)
+	}
+
 }

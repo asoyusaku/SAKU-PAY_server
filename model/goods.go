@@ -6,9 +6,8 @@ import (
 
 type Goods struct {
 	gorm.Model
-	Name  string `json:"name"`
-	Price string `json:"price"`
-	Image string `json:"image"`
+	Name   string `json:"name"`
+	Price  string `json:"price"`
+	Image  string `json:"image"`
+	UserID uint   `json:"user_id"`
 }
-
-type GoodsList []Goods

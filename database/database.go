@@ -146,6 +146,30 @@ func Add_Scrape_Goods(goods model.Goods) error {
 	return nil
 }
 
+func Add_Scrape_Member(member model.Member) error {
+	// Check if the member already exists
+	var existingMember model.Member
+	if err := variables.Database.Where("name = ?", member.Name).First(&existingMember).Error; err == nil {
+		return nil // Member already exists, no need to create a new record
+	}
+
+	// If the member does not exist, create a new record
+	if err := variables.Database.Create(&member).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func Get_Scrape_Member() ([]model.Member, error) {
+	var members []model.Member
+	if err := variables.Database.Find(&members).Error; err != nil {
+		return nil, err
+	}
+	return members, nil
+
+}
+
 func Database() {
 	database, err := gorm.Open(sqlite.Open(variables.Database_file), &gorm.Config{})
 	if err != nil {

@@ -87,6 +87,7 @@ func Scrape_Members() {
 	defer browser.MustClose()
 
 	page := browser.MustPage(variables.Member_list_url)
+	defer page.MustClose()
 
 	title := page.MustInfo().Title
 	fmt.Println("Page Title:", title)
@@ -119,6 +120,31 @@ func Scrape_Members() {
 	for _, member := range db {
 		fmt.Println("Member Name:", member.Name)
 		fmt.Println("Member Photo:", member.Picture)
+	}
+
+}
+
+func Scrape_Goods_Notice() {
+	url := launcher.New().MustLaunch()
+	browser := rod.New().ControlURL(url).MustConnect()
+	defer browser.MustClose()
+
+	page := browser.MustPage(variables.Goods_list_url)
+	defer page.MustClose()
+
+	page.MustElement("div.area--news p.tit") //明示的に要素が表示されるまで待機
+
+	elements_text := page.MustElements("div.area--news p.tit")
+	elements_date := page.MustElements("div.area--news p.date")
+
+	for count := 0; count < len(elements_text); count += 2 {
+		text := elements_text[count].MustText()
+		date := elements_date[count].MustText()
+		notice := model.Notice{
+			Text: text,
+			Date: date,
+		}
+		fmt.Println(notice)
 	}
 
 }

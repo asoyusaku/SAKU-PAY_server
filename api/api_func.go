@@ -95,7 +95,7 @@ func Delete_Oshimen(c *gin.Context) { //complete
 }
 
 // グッズ一覧取得
-func Get_AllGoods(c *gin.Context) {
+func Get_AllGoods(c *gin.Context) { //complete
 	elements_goods, err := database.GetAllGoods()
 	if err != nil {
 		c.JSON(500, gin.H{"error": "failed to get goods"})

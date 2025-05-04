@@ -13,7 +13,7 @@ func Api() {
 	router.GET("/oshimen/:id", Get_Oshimen)   //complete
 	router.POST("/oshimen", Post_Oshimen)     //complete
 	router.DELETE("/oshimen", Delete_Oshimen) //complete
-	router.GET("/goods", Get_AllGoods)
+	router.GET("/goods", Get_AllGoods)        //complete
 	router.POST("/goods", Post_Goods)
 	router.GET("/goods/:id", Get_Goods)
 	router.POST("/purchases", Post_Purchases)

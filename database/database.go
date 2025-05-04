@@ -172,7 +172,7 @@ func Add_Scrape_Member(member model.Member) error { //complete
 	return nil
 }
 
-func Add_Scrape_Notice(notice model.Notice) error {
+func Add_Scrape_Notice(notice model.Notice) error { //complete
 	var existingNotice model.Notice
 	if err := variables.Database.Where("text = ?", notice.Text).First(&existingNotice).Error; err == nil {
 		return nil
@@ -184,7 +184,7 @@ func Add_Scrape_Notice(notice model.Notice) error {
 	return nil
 }
 
-func Get_Scrape_Notice() ([]model.Notice, error) {
+func Get_Scrape_Notice() ([]model.Notice, error) { //complete
 	var notices []model.Notice
 	if err := variables.Database.Find(&notices).Error; err != nil {
 		return nil, err

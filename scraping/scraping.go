@@ -144,8 +144,11 @@ func Scrape_Goods_Notice() {
 			Text: text,
 			Date: date,
 		}
+		if !Compare_Notice_Judge(notice) && (count == 0) {
+			database.Add_Scrape_Notice(notice)
+			Scrape_Goods()
+			continue
+		}
 		database.Add_Scrape_Notice(notice)
-		database.Get_Scrape_Notice()
 	}
-
 }

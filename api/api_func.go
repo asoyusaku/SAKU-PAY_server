@@ -79,7 +79,7 @@ func Post_Oshimen(c *gin.Context) { //complete
 }
 
 // 推しメン削除
-func Delete_Oshimen(c *gin.Context) {
+func Delete_Oshimen(c *gin.Context) { //complete
 	var request model.Request
 
 	if err := c.BindJSON(&request); err != nil {

@@ -144,7 +144,8 @@ func Scrape_Goods_Notice() {
 			Text: text,
 			Date: date,
 		}
-		fmt.Println(notice)
+		database.Add_Scrape_Notice(notice)
+		database.Get_Scrape_Notice()
 	}
 
 }

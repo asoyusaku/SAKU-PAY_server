@@ -172,6 +172,27 @@ func Add_Scrape_Member(member model.Member) error { //complete
 	return nil
 }
 
+func Add_Scrape_Notice(notice model.Notice) error {
+	var existingNotice model.Notice
+	if err := variables.Database.Where("text = ?", notice.Text).First(&existingNotice).Error; err == nil {
+		return nil
+	}
+	if err := variables.Database.Create(&notice).Error; err != nil {
+		return err
+	}
+	fmt.Println("success add scrape notice")
+	return nil
+}
+
+func Get_Scrape_Notice() ([]model.Notice, error) {
+	var notices []model.Notice
+	if err := variables.Database.Find(&notices).Error; err != nil {
+		return nil, err
+	}
+	fmt.Println("success get scrape notice")
+	return notices, nil
+}
+
 func Database() {
 	database, err := gorm.Open(sqlite.Open(variables.Database_file), &gorm.Config{})
 	if err != nil {
@@ -184,6 +205,7 @@ func Database() {
 	database.AutoMigrate(&model.User{})
 	database.AutoMigrate(&model.Member{})
 	database.AutoMigrate(&model.Goods{})
+	database.AutoMigrate(&model.Notice{})
 
 	fmt.Println("Database connected successfully")
 

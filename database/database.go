@@ -150,6 +150,15 @@ func GetGoods(sub string) ([]model.Goods, error) {
 	return goodsList, nil
 }
 
+// データベース上にある全てのグッズを取得する
+func GetAllGoods() ([]model.Goods, error) {
+	var goods []model.Goods
+	if err := variables.Database.Find(&goods).Error; err != nil {
+		return nil, err
+	}
+	return goods, nil
+}
+
 func Add_Scrape_Goods(goods model.Goods) error { //complete
 	if err := variables.Database.Create(&goods).Error; err != nil {
 		return err

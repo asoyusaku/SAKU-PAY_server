@@ -3,7 +3,6 @@ package api
 import (
 	"SAKU-PAY/database"
 	"SAKU-PAY/model"
-	"SAKU-PAY/scraping"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,6 +20,7 @@ func Auth_Signup(c *gin.Context) { //complete
 	}
 }
 
+// user情報を登録
 func Add_User(c *gin.Context) { //complete
 	var response model.Response
 
@@ -37,6 +37,7 @@ func Add_User(c *gin.Context) { //complete
 	c.JSON(200, gin.H{"message": "user added successfully"})
 }
 
+// user情報を取得
 func Get_User(c *gin.Context) { //complete
 	id := c.Param("id")
 
@@ -93,13 +94,23 @@ func Delete_Oshimen(c *gin.Context) { //complete
 	c.JSON(200, gin.H{"message": "oshimen deleted successfully"})
 }
 
-// 推しメン情報取得
-func Get_OshimenInfo(c *gin.Context) {
+// グッズ一覧取得
+func Get_AllGoods(c *gin.Context) {
+	elements_goods, err := database.GetAllGoods()
+	if err != nil {
+		c.JSON(500, gin.H{"error": "failed to get goods"})
+		return
+	}
+	c.JSON(200, gin.H{"goods": elements_goods})
 }
 
-// グッズ一覧取得
+// グッズ追加
+func Post_Goods(c *gin.Context) {
+
+}
+
+// グッズ取得
 func Get_Goods(c *gin.Context) {
-	scraping.Scrape_Goods()
 }
 
 // 購入記録追加

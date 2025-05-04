@@ -12,11 +12,12 @@ import (
 	"github.com/go-rod/rod/lib/launcher"
 )
 
-const WASTE_NUMBER int = 3 // waste_numberは表示順、表示件数、ALL ITEMSの3つをスキップするための変数
+const WASTE_NUMBER int = 2 // waste_numberは表示順、表示件数、ALL ITEMSの3つをスキップするための変数
 
-func Scrape_Goods() {
+func Scrape_Goods() { //complete
 	var count int = 0
-	var waste_count int = 0
+	var price string
+	var match []string
 
 	url := launcher.New().MustLaunch()
 	browser := rod.New().ControlURL(url).MustConnect()
@@ -44,32 +45,30 @@ func Scrape_Goods() {
 outer:
 	for {
 		elements_name := page.MustElements("p.tit")
-		elements_price := page.MustElements("p.price span")
+		elements_price := page.MustElements("p.price")
 		figure := page.MustElements("figure.thumb img")
 
 		for i := 0; i < len(elements_name); i++ {
 			if count != number {
 				goods_name := elements_name[i].MustText()
-				price := elements_price[i].MustText()
-				style := figure[i].MustAttribute("style")
-				re := regexp.MustCompile(`url\((.*?)\)`)
-				match := re.FindStringSubmatch(*style)
-				if goods_name == "表示順" || goods_name == "表示件数" {
-					if waste_count != WASTE_NUMBER {
-						waste_count++
-						continue
+				if i > WASTE_NUMBER-1 {
+					if goods_name == "表示順" || goods_name == "表示件数" {
+						break
 					}
-					break
+					price = elements_price[i-WASTE_NUMBER].MustText()
+					style := figure[i-WASTE_NUMBER].MustAttribute("style")
+					re := regexp.MustCompile(`url\((.*?)\)`)
+					match = re.FindStringSubmatch(*style)
+					fmt.Println("Goods Name:", goods_name)
+					fmt.Println("Price:", price)
+					fmt.Println("Image URL:", match[1])
+					goods := model.Goods{
+						Name:  goods_name,
+						Price: price,
+						Image: match[1],
+					}
+					database.Add_Scrape_Goods(goods)
 				}
-				fmt.Println("Goods Name:", goods_name)
-				fmt.Println("Price:", price)
-				fmt.Println("Image URL:", match[1])
-				goods := model.Goods{
-					Name:  goods_name,
-					Price: price,
-					Image: match[1],
-				}
-				database.Add_Scrape_Goods(goods)
 				count++
 			} else {
 				break outer
@@ -78,7 +77,7 @@ outer:
 		page.MustElement("a.next").MustClick()
 		page.MustWaitStable()
 	}
-
+	fmt.Println("AAA")
 }
 
 func Scrape_Members() {
@@ -144,11 +143,10 @@ func Scrape_Goods_Notice() {
 			Text: text,
 			Date: date,
 		}
-		if !Compare_Notice_Judge(notice) && (count == 0) {
-			database.Add_Scrape_Notice(notice)
-			Scrape_Goods()
-			continue
+		if Compare_Notice_Judge(notice) && (count == 0) {
+			return
 		}
 		database.Add_Scrape_Notice(notice)
 	}
+	Scrape_Goods()
 }

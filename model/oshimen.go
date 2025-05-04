@@ -1,11 +1,6 @@
 package model
 
-import (
-	"gorm.io/gorm"
-)
-
 type Member struct {
-	gorm.Model
-	Name    string `json:"name"`
+	Name    string `json:"name" gorm:"primaryKey"`
 	Picture string `json:"picture"`
 }

@@ -51,24 +51,53 @@ func GetUser(sub string) (model.User, error) {
 	return user, nil
 }
 
-func AddOshimen(sub string, oshimen model.Member) error { //complete
+func AddOshimen(sub string, oshimen model.Member) error {
 	var user model.User
-	var existingMember model.Member // Check if the member already exists
+	var existingMember model.Member
+
+	if err := variables.Database.First(&user, "id = ?", sub).Error; err != nil {
+		return err
+	}
+
+	if err := variables.Database.Where("name = ?", oshimen.Name).First(&existingMember).Error; err != nil {
+		if err := variables.Database.Create(&oshimen).Error; err != nil {
+			return err
+		}
+		existingMember = oshimen
+	}
+
+	if err := variables.Database.Model(&user).Association("Oshimen").Append(&existingMember); err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetOshimen(sub string) ([]model.Member, error) { //complete
+	var user model.User
+	var oshimen_list []model.Member
+
+	if err := variables.Database.Preload("Oshimen").First(&user, "id = ?", sub).Error; err != nil {
+		return nil, err
+	}
+	if err := variables.Database.Model(&user).Association("Oshimen").Find(&oshimen_list); err != nil {
+		return nil, err
+	}
+	return oshimen_list, nil
+
+}
+
+func DeleteOshimen(sub string, oshimen model.Member) error { //complete
+	var user model.User
 
 	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
 		return err
 	}
-	if err := variables.Database.Where("name = ?", oshimen.Name).First(&existingMember).Error; err == nil {
-		return nil // Member already exists, no need to create a new record
-	}
-	if err := variables.Database.Model(&user).Association("Oshimen").Append(&oshimen); err != nil {
-		return err
-	}
-	if err := variables.Database.Save(&user).Error; err != nil {
-		return err
-	}
-	return nil
 
+	if err := variables.Database.Model(&user).Association("Oshimen").Delete(&oshimen); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func AddMember(member model.Member) error { //complete
@@ -84,21 +113,6 @@ func GetMember() ([]model.Member, error) { //complete
 		return nil, err
 	}
 	return members, nil
-}
-
-func GetOshimen(sub string) ([]model.Member, error) { //complete
-	var user model.User
-
-	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
-		return nil, err
-	}
-
-	var oshimenList []model.Member
-	if err := variables.Database.Model(&user).Association("Oshimen").Find(&oshimenList); err != nil {
-		return nil, err
-	}
-
-	return oshimenList, nil
 }
 
 func AddGoods(sub string, goods model.Goods) error {
@@ -136,14 +150,14 @@ func GetGoods(sub string) ([]model.Goods, error) {
 	return goodsList, nil
 }
 
-func Add_Scrape_Goods(goods model.Goods) error {
+func Add_Scrape_Goods(goods model.Goods) error { //complete
 	if err := variables.Database.Create(&goods).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func Add_Scrape_Member(member model.Member) error {
+func Add_Scrape_Member(member model.Member) error { //complete
 	// Check if the member already exists
 	var existingMember model.Member
 	if err := variables.Database.Where("name = ?", member.Name).First(&existingMember).Error; err == nil {

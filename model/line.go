@@ -1,11 +1,6 @@
 package model
 
-import (
-	"gorm.io/gorm"
-)
-
 type IdToken struct {
-	gorm.Model
 	IdToken string `json:"id_token" gorm:"id_token"`
 }
 

@@ -37,6 +37,18 @@ func Add_User(c *gin.Context) { //complete
 	c.JSON(200, gin.H{"message": "user added successfully"})
 }
 
+func Get_User(c *gin.Context) { //complete
+	id := c.Param("id")
+
+	if user, err := database.GetUser(id); err != nil {
+		c.JSON(500, gin.H{"error": "failed to get user"})
+		return
+	} else {
+		c.JSON(200, gin.H{"user": user})
+		return
+	}
+}
+
 // 推しメン一覧取得
 func Get_Oshimen(c *gin.Context) { //complete
 	id := c.Param("id")
@@ -68,6 +80,17 @@ func Post_Oshimen(c *gin.Context) { //complete
 
 // 推しメン削除
 func Delete_Oshimen(c *gin.Context) {
+	var request model.Request
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": "failed to bind request"})
+		return
+	}
+	if err := database.DeleteOshimen(request.UserId, request.Oshimen); err != nil {
+		c.JSON(500, gin.H{"error": "failed to delete oshimen"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "oshimen deleted successfully"})
 }
 
 // 推しメン情報取得

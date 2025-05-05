@@ -66,7 +66,7 @@ func Get_Oshimen(c *gin.Context) { //complete
 
 // 推しメン追加
 func Post_Oshimen(c *gin.Context) { //complete
-	var request model.Request
+	var request model.Request_Oshimen
 
 	if err := c.BindJSON(&request); err != nil {
 		c.JSON(400, gin.H{"error": "failed to bind request"})
@@ -81,7 +81,7 @@ func Post_Oshimen(c *gin.Context) { //complete
 
 // 推しメン削除
 func Delete_Oshimen(c *gin.Context) { //complete
-	var request model.Request
+	var request model.Request_Oshimen
 
 	if err := c.BindJSON(&request); err != nil {
 		c.JSON(400, gin.H{"error": "failed to bind request"})
@@ -105,12 +105,29 @@ func Get_AllGoods(c *gin.Context) { //complete
 }
 
 // グッズ追加
-func Post_Goods(c *gin.Context) {
-
+func Post_Goods(c *gin.Context) { //complete
+	var purchase model.Request_Purchase
+	if err := c.BindJSON(&purchase); err != nil {
+		c.JSON(400, gin.H{"error": "failed to bind purchase"})
+		return
+	}
+	if err := database.AddGoods(purchase); err != nil {
+		c.JSON(500, gin.H{"error": "failed to add goods"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "goods added successfully"})
 }
 
 // グッズ取得
-func Get_Goods(c *gin.Context) {
+func Get_Goods(c *gin.Context) { //complete
+	id := c.Param("id")
+	if goods, err := database.GetGoods(id); err != nil {
+		c.JSON(500, gin.H{"error": "failed to get goods"})
+		return
+	} else {
+		c.JSON(200, gin.H{"goods": goods})
+		return
+	}
 }
 
 // 購入記録追加

@@ -115,39 +115,56 @@ func GetMember() ([]model.Member, error) { //complete
 	return members, nil
 }
 
-func AddGoods(sub string, goods model.Goods) error {
+func AddGoods(responce model.Request_Purchase) error { //complete
 	var user model.User
+	var goods model.Goods
 
-	//userのgoodslistにgoodsを追加する
-	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
+	if err := variables.Database.Where("id = ?", responce.UserId).First(&user).Error; err != nil {
+		fmt.Println("User not found:", err)
 		return err
 	}
 
-	if err := variables.Database.Model(&user).Association("Goods").Append(&goods); err != nil {
+	if err := variables.Database.Where("name = ?", responce.GoodsName).First(&goods).Error; err != nil {
+		fmt.Println("Goods not found:", err)
 		return err
 	}
 
-	if err := variables.Database.Save(&user).Error; err != nil {
+	purchase := model.Purchase{
+		UserId:    user.ID,
+		GoodsName: goods.Name,
+		Quantity:  responce.Quantity,
+	}
+
+	if err := variables.Database.Create(&purchase).Error; err != nil {
+		fmt.Println("Failed to create purchase:", err)
 		return err
 	}
 
 	return nil
-
 }
 
-func GetGoods(sub string) ([]model.Goods, error) {
-	var user model.User
+func GetGoods(sub string) ([]model.Response_Goods, error) { //complete
+	var purchases []model.Purchase
+	var goods []model.Response_Goods
 
-	if err := variables.Database.Where("id = ?", sub).First(&user).Error; err != nil {
+	// ユーザーが購入したすべての購入データを取得
+	if err := variables.Database.Where("user_id = ?", sub).Find(&purchases).Error; err != nil {
 		return nil, err
 	}
 
-	var goodsList []model.Goods
-	if err := variables.Database.Model(&user).Association("Goods").Find(&goodsList); err != nil {
-		return nil, err
+	// 各購入データに関連するグッズを取得
+	for _, purchase := range purchases {
+		var good model.Goods
+		if err := variables.Database.Where("name = ?", purchase.GoodsName).First(&good).Error; err != nil {
+			return nil, err
+		}
+		goods = append(goods, model.Response_Goods{
+			Goods:    good,
+			Quantity: purchase.Quantity,
+		})
 	}
 
-	return goodsList, nil
+	return goods, nil
 }
 
 // データベース上にある全てのグッズを取得する
@@ -215,6 +232,7 @@ func Database() {
 	database.AutoMigrate(&model.Member{})
 	database.AutoMigrate(&model.Goods{})
 	database.AutoMigrate(&model.Notice{})
+	database.AutoMigrate(&model.Purchase{})
 
 	fmt.Println("Database connected successfully")
 

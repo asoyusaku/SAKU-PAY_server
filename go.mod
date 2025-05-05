@@ -2,8 +2,6 @@ module SAKU-PAY
 
 go 1.23.0
 
-toolchain go1.23.8
-
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-rod/rod v0.116.2

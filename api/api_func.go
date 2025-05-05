@@ -7,35 +7,36 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 新規登録
-func Auth_Signup(c *gin.Context) { //complete
+// user情報を登録
+func Auth_Signup(c *gin.Context) {
 	var token model.IdToken
 
 	if err := c.BindJSON(&token); err != nil {
 		return
 	}
-	if err := database.AddIdToken(token); err != nil {
-		c.JSON(500, gin.H{"error": "failed to add id token"})
-		return
-	}
-}
-
-// user情報を登録
-func Add_User(c *gin.Context) { //complete
-	var response model.Response
-
-	if err := c.BindJSON(&response); err != nil {
-		c.JSON(400, gin.H{"error": "failed to bind response"})
-		return
-	}
-
-	if err := database.AddUser(response); err != nil {
+	if err := database.AddUser(token); err != nil {
 		c.JSON(500, gin.H{"error": "failed to add user"})
 		return
 	}
-
 	c.JSON(200, gin.H{"message": "user added successfully"})
 }
+
+// // user情報を登録
+// func Add_User(c *gin.Context) { //complete
+// 	var response model.Response
+
+// 	if err := c.BindJSON(&response); err != nil {
+// 		c.JSON(400, gin.H{"error": "failed to bind response"})
+// 		return
+// 	}
+
+// 	if err := database.AddUser(response); err != nil {
+// 		c.JSON(500, gin.H{"error": "failed to add user"})
+// 		return
+// 	}
+
+// 	c.JSON(200, gin.H{"message": "user added successfully"})
+// }
 
 // user情報を取得
 func Get_User(c *gin.Context) { //complete

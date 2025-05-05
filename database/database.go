@@ -2,6 +2,7 @@ package database
 
 import (
 	"SAKU-PAY/model"
+	"SAKU-PAY/response"
 	"SAKU-PAY/variables"
 	"fmt"
 	"regexp"
@@ -29,7 +30,12 @@ func GetIdToken() (model.IdToken, error) {
 	return idtoken, nil
 }
 
-func AddUser(response model.Response) error { //complete
+func AddUser(token model.IdToken) error { //complete
+	response, err := response.LineVerify(token.IdToken)
+	if err != nil {
+		return err
+	}
+
 	user := model.User{
 		ID:      "12345",
 		Name:    response.Name,

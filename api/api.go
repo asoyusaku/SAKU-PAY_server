@@ -16,8 +16,7 @@ func Api() {
 	router.GET("/goods", Get_AllGoods)          //complete
 	router.GET("/purchases/:id", Get_Purchases) //complete
 	router.POST("/purchases", Put_Purchases)    //complete
-	router.POST("/statistics", Post_Statistics)
-	router.GET("/statistics", Get_Statistics)
+	router.GET("/cost/:id", Get_Total_Cost)     //complete
 
 	router.Run(":9090")
 }

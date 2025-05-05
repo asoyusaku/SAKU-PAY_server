@@ -4,6 +4,8 @@ import (
 	"SAKU-PAY/model"
 	"SAKU-PAY/variables"
 	"fmt"
+	"regexp"
+	"strconv"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -124,6 +126,7 @@ func GetGoods(sub string) ([]model.Response_Goods, error) { //complete
 		return nil, err
 	}
 
+	fmt.Println("Purchases:", purchases)
 	// 各購入データに関連するグッズを取得
 	for _, purchase := range purchases {
 		var good model.Goods
@@ -215,6 +218,50 @@ func Get_Scrape_Notice() ([]model.Notice, error) { //complete
 	}
 	fmt.Println("success get scrape notice")
 	return notices, nil
+}
+
+func Get_TotalCost(sub string) (int, error) { //complete
+	var total_cost int
+	var purchases []model.Purchase
+
+	if err := variables.Database.Where("user_id = ?", sub).Find(&purchases).Error; err != nil {
+		return 0, err
+	}
+
+	fmt.Println("Purchases:", purchases)
+	for _, purchase := range purchases {
+		fmt.Println("Purchase:", purchase)
+		var goods model.Goods
+		if err := variables.Database.Where("name = ?", purchase.GoodsName).First(&goods).Error; err != nil {
+			fmt.Println("Failed to find goods:", err)
+			return 0, err
+		}
+		price, _ := ExtractPrice(goods.Price)
+		total_cost += purchase.Quantity * price
+		fmt.Println("Goods name:", goods.Name)
+		fmt.Println("Goods price:", price)
+		fmt.Println("Quantity:", purchase.Quantity)
+	}
+	fmt.Println("Total cost:", total_cost)
+	return total_cost, nil
+}
+
+func ExtractPrice(priceStr string) (int, error) { //complete
+	// 正規表現で数値部分を抽出
+	re := regexp.MustCompile(`[0-9,]+`)
+	matches := re.FindString(priceStr)
+	if matches == "" {
+		return 0, fmt.Errorf("no valid price found in string")
+	}
+
+	// カンマを削除して数値に変換
+	cleaned := regexp.MustCompile(`,`).ReplaceAllString(matches, "")
+	price, err := strconv.Atoi(cleaned)
+	if err != nil {
+		return 0, err
+	}
+
+	return price, nil
 }
 
 func Database() {

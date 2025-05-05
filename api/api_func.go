@@ -117,7 +117,7 @@ func Get_Purchases(c *gin.Context) { //complete
 }
 
 // 購入記録追加または更新
-func Put_Purchases(c *gin.Context) {
+func Put_Purchases(c *gin.Context) { //complete
 	var purchase model.Request_Purchase
 	if err := c.BindJSON(&purchase); err != nil {
 		c.JSON(400, gin.H{"error": "failed to bind purchase"})
@@ -130,10 +130,14 @@ func Put_Purchases(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "goods updated successfully"})
 }
 
-// 購入集計記録
-func Post_Statistics(c *gin.Context) {
-}
-
 // 購入集計取得
-func Get_Statistics(c *gin.Context) {
+func Get_Total_Cost(c *gin.Context) { //complete
+	id := c.Param("id")
+	if total_cost, err := database.Get_TotalCost(id); err != nil {
+		c.JSON(500, gin.H{"error": "failed to get total cost"})
+		return
+	} else {
+		c.JSON(200, gin.H{"total_cost": total_cost})
+		return
+	}
 }

@@ -115,34 +115,6 @@ func GetMember() ([]model.Member, error) { //complete
 	return members, nil
 }
 
-func AddGoods(responce model.Request_Purchase) error { //complete
-	var user model.User
-	var goods model.Goods
-
-	if err := variables.Database.Where("id = ?", responce.UserId).First(&user).Error; err != nil {
-		fmt.Println("User not found:", err)
-		return err
-	}
-
-	if err := variables.Database.Where("name = ?", responce.GoodsName).First(&goods).Error; err != nil {
-		fmt.Println("Goods not found:", err)
-		return err
-	}
-
-	purchase := model.Purchase{
-		UserId:    user.ID,
-		GoodsName: goods.Name,
-		Quantity:  responce.Quantity,
-	}
-
-	if err := variables.Database.Create(&purchase).Error; err != nil {
-		fmt.Println("Failed to create purchase:", err)
-		return err
-	}
-
-	return nil
-}
-
 func GetGoods(sub string) ([]model.Response_Goods, error) { //complete
 	var purchases []model.Purchase
 	var goods []model.Response_Goods
@@ -165,6 +137,32 @@ func GetGoods(sub string) ([]model.Response_Goods, error) { //complete
 	}
 
 	return goods, nil
+}
+
+func UpdateGoods(request model.Request_Purchase) error {
+	var user model.User
+	var goods model.Goods
+	var purchase model.Purchase
+
+	if err := variables.Database.Where("user_id = ? AND goods_name = ?", request.UserId, request.GoodsName).First(&purchase).Error; err != nil {
+		purchase := model.Purchase{
+			UserId:    user.ID,
+			GoodsName: goods.Name,
+			Quantity:  request.Quantity,
+		}
+
+		if err := variables.Database.Create(&purchase).Error; err != nil {
+			fmt.Println("Failed to create purchase:", err)
+			return err
+		}
+		return nil
+	} else {
+		purchase.Quantity += request.Quantity
+		if err := variables.Database.Save(&purchase).Error; err != nil {
+			return err
+		}
+		return nil
+	}
 }
 
 // データベース上にある全てのグッズを取得する

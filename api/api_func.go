@@ -104,22 +104,8 @@ func Get_AllGoods(c *gin.Context) { //complete
 	c.JSON(200, gin.H{"goods": elements_goods})
 }
 
-// グッズ追加
-func Post_Goods(c *gin.Context) { //complete
-	var purchase model.Request_Purchase
-	if err := c.BindJSON(&purchase); err != nil {
-		c.JSON(400, gin.H{"error": "failed to bind purchase"})
-		return
-	}
-	if err := database.AddGoods(purchase); err != nil {
-		c.JSON(500, gin.H{"error": "failed to add goods"})
-		return
-	}
-	c.JSON(200, gin.H{"message": "goods added successfully"})
-}
-
-// グッズ取得
-func Get_Goods(c *gin.Context) { //complete
+// 購入記録取得
+func Get_Purchases(c *gin.Context) { //complete
 	id := c.Param("id")
 	if goods, err := database.GetGoods(id); err != nil {
 		c.JSON(500, gin.H{"error": "failed to get goods"})
@@ -130,16 +116,18 @@ func Get_Goods(c *gin.Context) { //complete
 	}
 }
 
-// 購入記録追加
-func Post_Purchases(c *gin.Context) {
-}
-
-// 購入記録取得
-func Get_Purchases(c *gin.Context) {
-}
-
-// 購入記録更新
+// 購入記録追加または更新
 func Put_Purchases(c *gin.Context) {
+	var purchase model.Request_Purchase
+	if err := c.BindJSON(&purchase); err != nil {
+		c.JSON(400, gin.H{"error": "failed to bind purchase"})
+		return
+	}
+	if err := database.UpdateGoods(purchase); err != nil {
+		c.JSON(500, gin.H{"error": "failed to update goods"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "goods updated successfully"})
 }
 
 // 購入集計記録

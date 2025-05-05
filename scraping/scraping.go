@@ -149,4 +149,5 @@ func Scrape_Goods_Notice() {
 		database.Add_Scrape_Notice(notice)
 	}
 	Scrape_Goods()
+	Scrape_Members()
 }

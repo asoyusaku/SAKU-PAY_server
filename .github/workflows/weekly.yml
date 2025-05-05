@@ -1,0 +1,21 @@
+name: Weekly Go Run
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # 毎週月曜の午前9時（日本時間）
+  workflow_dispatch:       # 手動実行も可能にする
+
+jobs:
+  run-go-weekly:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.23'  # または自分が使いたいGoバージョンに変更
+
+      - name: Run your Go program
+        run: go run ../main/main.go   # 実行したいファイル名に置き換えてください

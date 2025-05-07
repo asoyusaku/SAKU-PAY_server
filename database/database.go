@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -184,6 +185,10 @@ func GetAllGoods() ([]model.Goods, error) {
 }
 
 func Add_Scrape_Goods(goods model.Goods) error { //complete
+	if strings.Contains(goods.Name, "【会場受取】") || strings.Contains(goods.Name, "【通常配送】") {
+		goods.Name = strings.ReplaceAll(goods.Name, "【会場受取】", "")
+		goods.Name = strings.ReplaceAll(goods.Name, "【通常配送】", "")
+	}
 	if err := variables.Database.Create(&goods).Error; err != nil {
 		return err
 	}

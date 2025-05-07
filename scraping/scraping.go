@@ -59,9 +59,6 @@ outer:
 					style := figure[i-WASTE_NUMBER].MustAttribute("style")
 					re := regexp.MustCompile(`url\((.*?)\)`)
 					match = re.FindStringSubmatch(*style)
-					fmt.Println("Goods Name:", goods_name)
-					fmt.Println("Price:", price)
-					fmt.Println("Image URL:", match[1])
 					goods := model.Goods{
 						Name:  goods_name,
 						Price: price,

@@ -4,8 +4,10 @@ import (
 	"SAKU-PAY/model"
 	"SAKU-PAY/response"
 	"SAKU-PAY/variables"
+	"errors"
 	"fmt"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -37,6 +39,21 @@ func AddUser(token model.IdToken) error { //complete
 		return err
 	}
 
+	user := model.User{
+		ID:      "12345",
+		Name:    response.Name,
+		Picture: response.Picture,
+		Email:   response.Email,
+	}
+
+	if err := variables.Database.Create(&user).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func AddUser_Test(response model.Response) error { //complete
 	user := model.User{
 		ID:      "12345",
 		Name:    response.Name,
@@ -149,30 +166,35 @@ func GetGoods(sub string) ([]model.Response_Goods, error) { //complete
 	return goods, nil
 }
 
-func UpdateGoods(request model.Request_Purchase) error {
-	var user model.User
-	var goods model.Goods
+func UpdateGoods(request model.Request_Purchase) error { //complete
 	var purchase model.Purchase
 
-	if err := variables.Database.Where("user_id = ? AND goods_name = ?", request.UserId, request.GoodsName).First(&purchase).Error; err != nil {
-		purchase := model.Purchase{
-			UserId:    user.ID,
-			GoodsName: goods.Name,
-			Quantity:  request.Quantity,
-		}
+	err := variables.Database.Where("user_id = ? AND goods_name = ?", request.UserId, request.GoodsName).First(&purchase).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			purchase = model.Purchase{
+				UserId:    request.UserId,
+				GoodsName: request.GoodsName,
+				Quantity:  request.Quantity,
+			}
 
-		if err := variables.Database.Create(&purchase).Error; err != nil {
-			fmt.Println("Failed to create purchase:", err)
-			return err
+			if err := variables.Database.Create(&purchase).Error; err != nil {
+				fmt.Println("Failed to create purchase:", err)
+				return err
+			}
+			return nil
 		}
-		return nil
-	} else {
-		purchase.Quantity += request.Quantity
-		if err := variables.Database.Save(&purchase).Error; err != nil {
-			return err
-		}
-		return nil
+		fmt.Println("Failed to query purchase:", err)
+		return err
 	}
+
+	purchase.Quantity += request.Quantity
+	if err := variables.Database.Save(&purchase).Error; err != nil {
+		fmt.Println("Failed to update purchase:", err)
+		return err
+	}
+
+	return nil
 }
 
 // データベース上にある全てのグッズを取得する
@@ -273,6 +295,49 @@ func ExtractPrice(priceStr string) (int, error) { //complete
 	}
 
 	return price, nil
+}
+
+func GetGoodsRanking() ([]model.Response_Goods, error) {
+	// 全てのユーザの購入履歴を取得
+	var purchases []model.Purchase
+	if err := variables.Database.Find(&purchases).Error; err != nil {
+		return nil, err
+	}
+	// 購入履歴をグッズ名で集計
+	goodsMap := make(map[string]int)
+	for _, purchase := range purchases {
+		goodsMap[purchase.GoodsName] += purchase.Quantity
+	}
+	fmt.Println("GoodsMap:", goodsMap)
+
+	// グッズ名と数量をスライスに変換
+	var goodsList []model.Response_Goods
+	for name, quantity := range goodsMap {
+		var good model.Goods
+		if err := variables.Database.Where("name = ?", name).First(&good).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// 該当するグッズが見つからない場合はスキップ
+				fmt.Printf("Warning: Goods with name '%s' not found in database\n", name)
+				continue
+			}
+			// その他のエラーの場合は処理を中断
+			return nil, err
+		}
+		goodsList = append(goodsList, model.Response_Goods{
+			Goods:    good,
+			Quantity: quantity,
+		})
+	}
+	// 数量でソート
+	sort.Slice(goodsList, func(i, j int) bool {
+		return goodsList[i].Quantity > goodsList[j].Quantity
+	})
+
+	//上位3件を取得
+	if len(goodsList) > 3 {
+		goodsList = goodsList[:3]
+	}
+	return goodsList, nil
 }
 
 func Database() {

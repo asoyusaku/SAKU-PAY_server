@@ -20,7 +20,7 @@ func Api() {
 	}))
 
 	router.POST("/auth/signup", Auth_Signup)
-	// router.POST("/user", Add_User)              //complete
+	router.POST("/user", Auth_Signup_Test)      //complete
 	router.GET("/user/:id", Get_User)           //complete
 	router.GET("/oshimen/:id", Get_Oshimen)     //complete
 	router.POST("/oshimen", Post_Oshimen)       //complete
@@ -29,6 +29,7 @@ func Api() {
 	router.GET("/purchases/:id", Get_Purchases) //complete
 	router.POST("/purchases", Put_Purchases)    //complete
 	router.GET("/cost/:id", Get_Total_Cost)     //complete
+	router.GET("/ranking", Get_GoodsRanking)
 
 	router.Run(":9090")
 }

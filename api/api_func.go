@@ -21,22 +21,19 @@ func Auth_Signup(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "user added successfully"})
 }
 
-// // user情報を登録
-// func Add_User(c *gin.Context) { //complete
-// 	var response model.Response
+// user情報を登録 (テスト用)
+func Auth_Signup_Test(c *gin.Context) {
+	var response model.Response
 
-// 	if err := c.BindJSON(&response); err != nil {
-// 		c.JSON(400, gin.H{"error": "failed to bind response"})
-// 		return
-// 	}
-
-// 	if err := database.AddUser(response); err != nil {
-// 		c.JSON(500, gin.H{"error": "failed to add user"})
-// 		return
-// 	}
-
-// 	c.JSON(200, gin.H{"message": "user added successfully"})
-// }
+	if err := c.BindJSON(&response); err != nil {
+		return
+	}
+	if err := database.AddUser_Test(response); err != nil {
+		c.JSON(500, gin.H{"error": "failed to add user"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "user added successfully"})
+}
 
 // user情報を取得
 func Get_User(c *gin.Context) { //complete
@@ -139,6 +136,16 @@ func Get_Total_Cost(c *gin.Context) { //complete
 		return
 	} else {
 		c.JSON(200, gin.H{"total_cost": total_cost})
+		return
+	}
+}
+
+func Get_GoodsRanking(c *gin.Context) { //complete
+	if goods_ranking, err := database.GetGoodsRanking(); err != nil {
+		c.JSON(500, gin.H{"error": "failed to get goods ranking"})
+		return
+	} else {
+		c.JSON(200, gin.H{"goods_ranking": goods_ranking})
 		return
 	}
 }
